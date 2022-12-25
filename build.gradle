@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+}
+
+apply plugin: 'application'
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'battleship.BattleshipGame'
+    }
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+
+mainClassName = "battleshipgame.BattleshipGame"
+
+run {
+    standardInput = System.in
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
