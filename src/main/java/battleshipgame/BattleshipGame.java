@@ -6,7 +6,8 @@ import board.Arena;
 import board.ArenaConfigurationException;
 import game.GameBuildException;
 import game.GameRunException;
-import game.TwoPlayerGameCoordinator;
+import game.GenericGameCoordinator;
+import player.ArenaPlayer;
 import player.ArenaPlayerBuilder;
 import player.PlayerConfigurationException;
 import player.PlayerInput;
@@ -17,12 +18,9 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class BattleshipGame extends TwoPlayerGameCoordinator<BattleshipCoordinate, BattleshipState> {
-    public static void main(String[] args) throws GameBuildException, GameRunException {
-        BattleshipGame battleshipGame = new BattleshipGame();
-        battleshipGame.setupGame();
-        battleshipGame.startGame();
-        battleshipGame.endGame();
+public class BattleshipGame extends GenericGameCoordinator<BattleshipCoordinate, BattleshipState> {
+    public BattleshipGame(int nPlayer) {
+        super(nPlayer);
     }
 
     private BattleshipConsolePlayerBuilder<BattleshipCoordinate> getPlayerBuilder(String playerName) {
@@ -51,5 +49,41 @@ public class BattleshipGame extends TwoPlayerGameCoordinator<BattleshipCoordinat
         BattleshipGamePlayerInput player2input = new BattleshipGamePlayerInput();
         BattleshipConsoleArenaBuilder.buildPlayerInputs(player1input, player2input);
         return Arrays.asList(player1input, player2input);
+    }
+
+    @Override
+    protected void configureOpponents(List<ArenaPlayer<BattleshipCoordinate>> arenaPlayers,
+                          List<ArenaPlayerBuilder<BattleshipCoordinate, BattleshipState>> arenaPlayerBuilders) {
+        // configure opposite Opponents;
+        for (int i = 0; i <= 1; i++) {
+            int finalI = i;
+            arenaPlayerBuilders.get(finalI).addOpponents(x -> arenaPlayers.get(finalI ^ 1));
+        }
+    }
+
+    @Override
+    protected Integer inWinner(List<ArenaPlayer<BattleshipCoordinate>> arenaPlayers,
+                               List<PlayerInput<BattleshipCoordinate>> playerInputs) {
+        for (int i = 0; i <= 1; i++) {
+            if (!arenaPlayers.get(i).lost() && arenaPlayers.get(i ^ 1).lost()) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected Boolean isDraw(List<ArenaPlayer<BattleshipCoordinate>> arenaPlayers,
+                             List<PlayerInput<BattleshipCoordinate>> playerInputs) {
+        int firstPlayer = 0;
+        return (arenaPlayers.get(firstPlayer).lost() && arenaPlayers.get(firstPlayer ^ 1).lost()) ||
+                (playerInputs.get(firstPlayer).isEmpty() && playerInputs.get(firstPlayer ^ 1).isEmpty());
+    }
+
+    public static void main(String[] args) throws GameBuildException, GameRunException {
+        BattleshipGame battleshipGame = new BattleshipGame(2);
+        battleshipGame.setupGame();
+        battleshipGame.startGame();
+        battleshipGame.endGame();
     }
 }
