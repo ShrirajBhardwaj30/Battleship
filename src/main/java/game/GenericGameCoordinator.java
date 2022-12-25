@@ -56,6 +56,12 @@ public abstract class GenericGameCoordinator<I, V> implements GameCoordinator<I>
     public void startGame() throws GameRunException {
         try {
             while(winner == null) {
+                // if this player is out of game move ahead.
+                if (players.get(this.turn).lost()) {
+                    this.turn = this.turn + 1 % nPlayers;
+                    continue;
+                }
+
                 players.get(this.turn).play(this.playersInputStreams.get(this.turn));
                 /*
                     check for winner.
