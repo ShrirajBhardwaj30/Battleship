@@ -10,6 +10,9 @@ import player.PlayerConfigurationException;
 
 import java.util.List;
 
+import static utils.StringConstant.PLAYER_BUILD_ARENA_MISSING;
+import static utils.StringConstant.PLAYER_BUILD_OPPONENT_MISSING;
+
 public class BattleshipConsolePlayerBuilder<I> extends BattleshipConsolePlayer<I>
         implements ArenaPlayerBuilder<I, BattleshipConsolePlayer.BattleshipState> {
 
@@ -25,10 +28,10 @@ public class BattleshipConsolePlayerBuilder<I> extends BattleshipConsolePlayer<I
     @Override
     public ArenaPlayer<I> build() throws PlayerConfigurationException {
         if (this.getArena() == null) {
-            throw new PlayerConfigurationException("can't build player without arena");
+            throw new PlayerConfigurationException(PLAYER_BUILD_ARENA_MISSING);
         }
         if (this.getOpponents() == null) {
-            throw new PlayerConfigurationException("can't build player without opponents");
+            throw new PlayerConfigurationException(PLAYER_BUILD_OPPONENT_MISSING);
         }
         return this;
     }
